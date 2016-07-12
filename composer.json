@@ -1,0 +1,23 @@
+{
+    "name": "adrianolaselva/doctrine-orm-batch",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Adriano M. La Selva",
+            "email": "adrianolaselva@gmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/orm": "~2.4",
+        "symfony/yaml": "2.*",
+        "apache/log4php": "2.3.0"
+    },
+    "autoload":{
+        "psr-0": {
+            "": "src/"
+        },
+        "psr-4": {
+            "CIELO\\": "src/CIELO/"
+        }
+    }
+}
