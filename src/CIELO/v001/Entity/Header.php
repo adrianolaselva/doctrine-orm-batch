@@ -2,14 +2,20 @@
 
 namespace CIELO\v001\Entity;
 
+use CIELO\Constants\TipoRegistro;
+use CIELO\Constants\Versao;
+use CIELO\Helpers\DateTimeHelper;
+use CIELO\Helpers\NumberHelper;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 /**
  * Class Header
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity
- * @ORM\Table(name="header")
+ * @ORM\Table(name="v001_header")
  * @ORM\HasLifecycleCallbacks()
  */
 class Header
@@ -24,6 +30,22 @@ class Header
     protected $id;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\RO",
+     *     mappedBy="header",
+     *     cascade={"persist", "remove", "merge" }, fetch="EXTRA_LAZY")
+     */
+    protected $ros;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    protected $tipoRegistro;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", nullable=false)
@@ -33,21 +55,21 @@ class Header
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="date", nullable=false)
+     * @ORM\Column(type="date", nullable=true)
      */
     protected $dataProcessamento;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="date", nullable=false)
+     * @ORM\Column(type="date", nullable=true)
      */
     protected $periodoInicial;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="date", nullable=false)
+     * @ORM\Column(type="date", nullable=true)
      */
     protected $periodoFinal;
 
@@ -84,6 +106,13 @@ class Header
      *
      * @ORM\Column(type="string", nullable=true)
      */
+    protected $caixaPostal;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
     protected $versaoLayout;
 
     /**
@@ -92,6 +121,13 @@ class Header
      * @ORM\Column(type="string", nullable=true)
      */
     protected $usoCielo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $arquivo;
 
     /**
      * @var \DateTime
@@ -107,12 +143,42 @@ class Header
      */
     protected $dataAtualizacao;
 
+
     /**
      * Header constructor.
      */
     public function __construct()
     {
+        $this->ros = new ArrayCollection();
+    }
 
+    /**
+     * @param $line
+     * @return $this
+     * @throws Exception
+     */
+    public function setLine($line)
+    {
+        if(substr($line, 0, 1) != TipoRegistro::CIELO_HEADER)
+            throw new Exception('Tipo registro inválido');
+
+//        if(substr($line, 70, 3) != Versao::CIELO_VERSAO_001)
+//            throw new Exception('Versão inválida');
+
+        $this->tipoRegistro = NumberHelper::toInt(substr($line, 0, 1));
+        $this->estabelecimentoMatriz = substr($line, 2, 10);
+        $this->dataProcessamento = DateTimeHelper::formatFromToDateTime(substr($line, 11, 8),'Ymd');
+        $this->periodoInicial = DateTimeHelper::formatFromToDateTime(substr($line, 19, 8),'Ymd');
+        $this->periodoFinal = DateTimeHelper::formatFromToDateTime(substr($line, 27, 8),'Ymd');
+        $this->sequencia = substr($line, 35, 7);
+        $this->empresaAdquirente = substr($line, 42, 5);
+        $this->opcaoExtrato = substr($line, 47, 2);
+        $this->van = substr($line, 49, 1);
+        $this->caixaPostal = substr($line, 50, 20);
+        $this->versaoLayout = substr($line, 70, 3);
+        $this->usoCielo = substr($line, 73, 177);
+
+        return $this;
     }
 
     /**
@@ -130,61 +196,7 @@ class Header
     }
 
     /**
-     * @return mixed
-     */
-    public function getDataProcessamento()
-    {
-        return $this->dataProcessamento;
-    }
-
-    /**
-     * @param mixed $dataProcessamento
-     * @return Header
-     */
-    public function setDataProcessamento($dataProcessamento)
-    {
-        $this->dataProcessamento = $dataProcessamento;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmpresaAdquirente()
-    {
-        return $this->empresaAdquirente;
-    }
-
-    /**
-     * @param mixed $empresaAdquirente
-     * @return Header
-     */
-    public function setEmpresaAdquirente($empresaAdquirente)
-    {
-        $this->empresaAdquirente = $empresaAdquirente;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEstabelecimentoMatriz()
-    {
-        return $this->estabelecimentoMatriz;
-    }
-
-    /**
-     * @param mixed $estabelecimentoMatriz
-     * @return Header
-     */
-    public function setEstabelecimentoMatriz($estabelecimentoMatriz)
-    {
-        $this->estabelecimentoMatriz = $estabelecimentoMatriz;
-        return $this;
-    }
-
-    /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -192,7 +204,7 @@ class Header
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      * @return Header
      */
     public function setId($id)
@@ -202,43 +214,79 @@ class Header
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
-    public function getOpcaoExtrato()
+    public function getRo()
     {
-        return $this->opcaoExtrato;
+        return $this->ros;
     }
 
     /**
-     * @param mixed $opcaoExtrato
-     * @return Header
+     * @param RO $ro
+     * @return $this
      */
-    public function setOpcaoExtrato($opcaoExtrato)
+    public function addRo(RO $ro)
     {
-        $this->opcaoExtrato = $opcaoExtrato;
+        $this->ros->add($ro);
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPeriodoFinal()
+    public function getTipoRegistro()
     {
-        return $this->periodoFinal;
+        return $this->tipoRegistro;
     }
 
     /**
-     * @param mixed $periodoFinal
+     * @param string $tipoRegistro
      * @return Header
      */
-    public function setPeriodoFinal($periodoFinal)
+    public function setTipoRegistro($tipoRegistro)
     {
-        $this->periodoFinal = $periodoFinal;
+        $this->tipoRegistro = $tipoRegistro;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
+     */
+    public function getEstabelecimentoMatriz()
+    {
+        return $this->estabelecimentoMatriz;
+    }
+
+    /**
+     * @param string $estabelecimentoMatriz
+     * @return Header
+     */
+    public function setEstabelecimentoMatriz($estabelecimentoMatriz)
+    {
+        $this->estabelecimentoMatriz = $estabelecimentoMatriz;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataProcessamento()
+    {
+        return $this->dataProcessamento;
+    }
+
+    /**
+     * @param \DateTime $dataProcessamento
+     * @return Header
+     */
+    public function setDataProcessamento($dataProcessamento)
+    {
+        $this->dataProcessamento = $dataProcessamento;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
      */
     public function getPeriodoInicial()
     {
@@ -246,7 +294,7 @@ class Header
     }
 
     /**
-     * @param mixed $periodoInicial
+     * @param \DateTime $periodoInicial
      * @return Header
      */
     public function setPeriodoInicial($periodoInicial)
@@ -256,7 +304,25 @@ class Header
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
+     */
+    public function getPeriodoFinal()
+    {
+        return $this->periodoFinal;
+    }
+
+    /**
+     * @param \DateTime $periodoFinal
+     * @return Header
+     */
+    public function setPeriodoFinal($periodoFinal)
+    {
+        $this->periodoFinal = $periodoFinal;
+        return $this;
+    }
+
+    /**
+     * @return string
      */
     public function getSequencia()
     {
@@ -264,7 +330,7 @@ class Header
     }
 
     /**
-     * @param mixed $sequencia
+     * @param string $sequencia
      * @return Header
      */
     public function setSequencia($sequencia)
@@ -274,7 +340,43 @@ class Header
     }
 
     /**
-     * @return mixed
+     * @return string
+     */
+    public function getEmpresaAdquirente()
+    {
+        return $this->empresaAdquirente;
+    }
+
+    /**
+     * @param string $empresaAdquirente
+     * @return Header
+     */
+    public function setEmpresaAdquirente($empresaAdquirente)
+    {
+        $this->empresaAdquirente = $empresaAdquirente;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOpcaoExtrato()
+    {
+        return $this->opcaoExtrato;
+    }
+
+    /**
+     * @param string $opcaoExtrato
+     * @return Header
+     */
+    public function setOpcaoExtrato($opcaoExtrato)
+    {
+        $this->opcaoExtrato = $opcaoExtrato;
+        return $this;
+    }
+
+    /**
+     * @return string
      */
     public function getVan()
     {
@@ -282,12 +384,120 @@ class Header
     }
 
     /**
-     * @param mixed $van
+     * @param string $van
      * @return Header
      */
     public function setVan($van)
     {
         $this->van = $van;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCaixaPostal()
+    {
+        return $this->caixaPostal;
+    }
+
+    /**
+     * @param string $caixaPostal
+     * @return Header
+     */
+    public function setCaixaPostal($caixaPostal)
+    {
+        $this->caixaPostal = $caixaPostal;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersaoLayout()
+    {
+        return $this->versaoLayout;
+    }
+
+    /**
+     * @param string $versaoLayout
+     * @return Header
+     */
+    public function setVersaoLayout($versaoLayout)
+    {
+        $this->versaoLayout = $versaoLayout;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsoCielo()
+    {
+        return $this->usoCielo;
+    }
+
+    /**
+     * @param string $usoCielo
+     * @return Header
+     */
+    public function setUsoCielo($usoCielo)
+    {
+        $this->usoCielo = $usoCielo;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArquivo()
+    {
+        return $this->arquivo;
+    }
+
+    /**
+     * @param string $arquivo
+     * @return Header
+     */
+    public function setArquivo($arquivo)
+    {
+        $this->arquivo = $arquivo;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataImportacao()
+    {
+        return $this->dataImportacao;
+    }
+
+    /**
+     * @param \DateTime $dataImportacao
+     * @return Header
+     */
+    public function setDataImportacao($dataImportacao)
+    {
+        $this->dataImportacao = $dataImportacao;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataAtualizacao()
+    {
+        return $this->dataAtualizacao;
+    }
+
+    /**
+     * @param \DateTime $dataAtualizacao
+     * @return Header
+     */
+    public function setDataAtualizacao($dataAtualizacao)
+    {
+        $this->dataAtualizacao = $dataAtualizacao;
         return $this;
     }
 

@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: Adriano
+ * Date: 12/07/2016
+ * Time: 19:13
+ */
+class ROTests extends PHPUnit_Framework_TestCase
+{
+    const ID = 1;
+    const HEADER = '010585494372016071120160711201607110006543CIELO03P                    001';
+    const RO = '110585494375160710     01160710160809000000+0000000001100-0000000000065+0000000000000+0000000001035003303744000001300611990000000145000000 160710  0000000000000 000000000+0000000000000001161920310059864000000005900000000000241025843045';
+    const CV = '210585494375160710506755******701200020160710+00000000011000000   395017                    25052400000000000001600000000000000000000000000000000000000041025843                      13374416192031005986400000000001000';
+
+    public function testSetline(){
+
+
+        $header = new \CIELO\v001\Entity\Header();
+        $ro = new \CIELO\v001\Entity\RO();
+
+        $header->setId(ROTests::ID)->setLine(ROTests::HEADER);
+
+        $ro->setLine($header, ROTests::RO);
+
+        var_dump($ro);
+    }
+}

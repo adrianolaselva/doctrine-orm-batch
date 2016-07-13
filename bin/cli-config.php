@@ -2,4 +2,4 @@
 
 require '../bootstrap.php';
 
-return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($em);
+return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($container['em']);
