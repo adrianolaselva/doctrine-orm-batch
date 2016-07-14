@@ -311,7 +311,7 @@ class RO
 
         if($header instanceof Header)
             $this->header = $header;
-
+        
         $this->tipoRegistro = substr($line, 0,1);
         $this->estabelecimento = substr($line, 1,10);
         $this->ro = substr($line, 10,7);

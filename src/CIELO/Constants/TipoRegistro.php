@@ -11,4 +11,6 @@ class TipoRegistro
     const CIELO_HEADER = '0';
     const CIELO_RO = '1';
     const CIELO_CV = '2';
+    const CIELO_ARV_DV = '5';
+    const CIELO_ARV_RO = '6';
 }

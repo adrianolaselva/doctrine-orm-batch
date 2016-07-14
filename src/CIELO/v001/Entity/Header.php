@@ -142,7 +142,7 @@ class Header
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $dataFim;
-    
+
     /**
      * @var \DateTime
      *

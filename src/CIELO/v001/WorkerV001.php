@@ -3,12 +3,18 @@
 namespace CIELO\v001;
 
 use CIELO\Common\DirectoryCommon;
+use CIELO\Constants\OpcaoExtrato;
+use CIELO\Constants\TipoRegistro;
 use CIELO\Factories\WorkerInterface;
 use CIELO\Providers\DoctrineORMServiceProvider;
 use CIELO\Providers\ServiceContainer;
+use CIELO\v001\Entity\ARVDV;
+use CIELO\v001\Entity\ARVRO;
 use CIELO\v001\Entity\CV;
 use CIELO\v001\Entity\Header;
 use CIELO\v001\Entity\RO;
+use CIELO\v001\Repository\ARVDVRepository;
+use CIELO\v001\Repository\ARVRORepository;
 use CIELO\v001\Repository\CVRepository;
 use CIELO\v001\Repository\HeaderRepository;
 use CIELO\v001\Repository\RORepository;
@@ -46,6 +52,16 @@ class WorkerV001 implements WorkerInterface
     private $cv;
 
     /**
+     * @var ARVDV
+     */
+    private $arvDv;
+
+    /**
+     * @var ARVRO
+     */
+    private $arvRo;
+
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
@@ -66,6 +82,16 @@ class WorkerV001 implements WorkerInterface
     private $cvRepository;
 
     /**
+     * @var ARVDVRepository
+     */
+    private $arvDvRepository;
+
+    /**
+     * @var ARVRORepository
+     */
+    private $arvRoRepository;
+
+    /**
      * WorkerV001 constructor.
      */
     public function __construct()
@@ -77,10 +103,14 @@ class WorkerV001 implements WorkerInterface
         $this->header = new Header();
         $this->ro = new RO();
         $this->cv = new CV();
+        $this->arvDv = new ARVDV();
+        $this->arvRo = new ARVRO();
 
         $this->headerRepository = $this->em->getRepository(Header::class);
         $this->roRepository = $this->em->getRepository(RO::class);
         $this->cvRepository = $this->em->getRepository(CV::class);
+        $this->arvDvRepository = $this->em->getRepository(ARVDV::class);
+        $this->arvRoRepository = $this->em->getRepository(ARVRO::class);
     }
 
     /**
@@ -122,7 +152,7 @@ class WorkerV001 implements WorkerInterface
                 continue;
 
             switch(substr($row, 0, 1)){
-                case '0':
+                case TipoRegistro::CIELO_HEADER:
                     $this->header = new Header();
                     $this->header->setDataInicio(new \DateTime('now'));
                     $this->header->setLine($row, $fileName['hashFile']);
@@ -134,7 +164,8 @@ class WorkerV001 implements WorkerInterface
                     $this->header->setId($header->getId());
                     $this->em->merge($this->header);
                     break;
-                case '1':
+                case TipoRegistro::CIELO_RO:
+                    echo 'ro';
                     $this->ro = new RO();
                     $this->ro->setLine($row, $this->header);
                     $ro = $this->roRepository->exists($this->ro);
@@ -145,7 +176,11 @@ class WorkerV001 implements WorkerInterface
                     $this->ro->setId($ro->getId());
                     $this->em->merge($this->ro);
                     break;
-                case '2':
+                case TipoRegistro::CIELO_CV:
+
+                    if($this->header->getOpcaoExtrato() == OpcaoExtrato::CIELO_OPCAO_EXTRATO_ANTECIPACAO_RECEBIVEIS)
+                        continue;
+
                     $this->cv = new CV();
                     $this->cv->setLine($row, $this->ro);
                     $cv = $this->cvRepository->exists($this->cv);
@@ -153,9 +188,30 @@ class WorkerV001 implements WorkerInterface
                         $this->em->persist($this->cv);
                         continue;
                     }
-
                     $this->cv->setId($cv->getId());
                     $this->em->merge($this->cv);
+                    break;
+                case TipoRegistro::CIELO_ARV_DV:
+                    $this->arvDv = new ARVDV();
+                    $this->arvDv->setLine($row, $this->header);
+                    $arvDv = $this->arvDvRepository->exists($this->arvDv);
+                    if(empty($arvDv)){
+                        $this->em->persist($this->arvDv);
+                        continue;
+                    }
+                    $this->arvDv->setId($arvDv->getId());
+                    $this->em->merge($this->arvDv);
+                    break;
+                case TipoRegistro::CIELO_ARV_RO:
+//                    $this->arvRo = new ARVRO();
+//                    $this->arvRo->setLine($row, $this->header);
+//                    $arvRo = $this->arvRoRepository->exists($this->arvRo);
+//                    if(empty($arvRo)){
+//                        $this->em->persist($this->arvRo);
+//                        continue;
+//                    }
+//                    $this->arvRo->setId($arvRo->getId());
+//                    $this->em->merge($this->arvRo);
                     break;
             }
         }
@@ -166,13 +222,9 @@ class WorkerV001 implements WorkerInterface
         $this->em->flush();
 
         if(!rename(
-            $fileName['fullName'],
-            WorkerV001::PATH_BASE
-            . getenv("test.edi.proccessed")
-            . DIRECTORY_SEPARATOR
-            . WorkerV001::DIRECTORY
-            . DIRECTORY_SEPARATOR
-            . $fileName['hashFile']))
+            $fileName['fullName'], WorkerV001::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR
+            . WorkerV001::DIRECTORY . DIRECTORY_SEPARATOR . $fileName['hashFile'])
+        )
             throw new Exception("Falha ao mover arquivo, importação não efetivada");
     }
 }
