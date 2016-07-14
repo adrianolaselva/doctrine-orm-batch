@@ -22,7 +22,7 @@ before_script:
   - composer install
   - composer --version
   - composer install --no-dev --verbose
-  - ./vendor/bin/doctrine orm:schema-tool:update --force
 
 script:
+  - ./vendor/bin/doctrine orm:schema-tool:update --force
   - "phpunit --configuration phpunit.xml --coverage-text"
