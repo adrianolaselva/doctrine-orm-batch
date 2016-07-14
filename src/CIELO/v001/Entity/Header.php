@@ -14,7 +14,7 @@ use Exception;
  * Class Header
  * @package CIELO\v001\Entity
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CIELO\v001\Repository\HeaderRepository")
  * @ORM\Table(name="v001_header")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -34,7 +34,7 @@ class Header
      *
      * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\RO",
      *     mappedBy="header",
-     *     cascade={"persist", "remove", "merge" }, fetch="EXTRA_LAZY")
+     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
      */
     protected $ros;
 
@@ -48,7 +48,7 @@ class Header
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=30, nullable=false)
      */
     protected $estabelecimentoMatriz;
 
@@ -76,35 +76,35 @@ class Header
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
     protected $sequencia;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     protected $empresaAdquirente;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
     protected $opcaoExtrato;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     protected $van;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     protected $caixaPostal;
 
@@ -125,7 +125,7 @@ class Header
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=90,nullable=true)
      */
     protected $arquivo;
 
@@ -157,16 +157,16 @@ class Header
      * @return $this
      * @throws Exception
      */
-    public function setLine($line)
+    public function setLine($line, $fileName = null)
     {
         if(substr($line, 0, 1) != TipoRegistro::CIELO_HEADER)
             throw new Exception('Tipo registro inválido');
 
-//        if(substr($line, 70, 3) != Versao::CIELO_VERSAO_001)
-//            throw new Exception('Versão inválida');
+        if(substr($line, 70, 3) != Versao::CIELO_VERSAO_001)
+            throw new Exception('Versão inválida');
 
         $this->tipoRegistro = NumberHelper::toInt(substr($line, 0, 1));
-        $this->estabelecimentoMatriz = substr($line, 2, 10);
+        $this->estabelecimentoMatriz = substr($line, 1, 10);
         $this->dataProcessamento = DateTimeHelper::formatFromToDateTime(substr($line, 11, 8),'Ymd');
         $this->periodoInicial = DateTimeHelper::formatFromToDateTime(substr($line, 19, 8),'Ymd');
         $this->periodoFinal = DateTimeHelper::formatFromToDateTime(substr($line, 27, 8),'Ymd');
@@ -177,6 +177,7 @@ class Header
         $this->caixaPostal = substr($line, 50, 20);
         $this->versaoLayout = substr($line, 70, 3);
         $this->usoCielo = substr($line, 73, 177);
+        $this->arquivo = $fileName;
 
         return $this;
     }
@@ -184,14 +185,15 @@ class Header
     /**
      * @ORM\PrePersist()
      */
-    private function prePersist(){
+    public function prePersist(){
         $this->dataImportacao = new \DateTime('now');
+        $this->dataAtualizacao = new \DateTime('now');
     }
 
     /**
      * @ORM\PreUpdate()
      */
-    private function preUpdate(){
+    public function preUpdate(){
         $this->dataAtualizacao = new \DateTime('now');
     }
 
@@ -483,22 +485,5 @@ class Header
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDataAtualizacao()
-    {
-        return $this->dataAtualizacao;
-    }
-
-    /**
-     * @param \DateTime $dataAtualizacao
-     * @return Header
-     */
-    public function setDataAtualizacao($dataAtualizacao)
-    {
-        $this->dataAtualizacao = $dataAtualizacao;
-        return $this;
-    }
 
 }

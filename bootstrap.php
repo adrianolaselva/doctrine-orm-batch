@@ -6,3 +6,11 @@ $container = new \Pimple\Container();
 $container->register(new \CIELO\Providers\DoctrineORMServiceProvider());
 
 $em = $container['em'];
+
+//carrega configurações
+$config = parse_ini_file(
+    __DIR__ . DIRECTORY_SEPARATOR . 'config.ini'
+);
+foreach($config as $key => $value){
+    putenv("{$key}={$value}");
+}

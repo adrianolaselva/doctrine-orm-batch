@@ -12,7 +12,7 @@ use Exception;
  * Class RO
  * @package CIELO\v001\Entity
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CIELO\v001\Repository\RORepository")
  * @ORM\Table(name="v001_ro")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -293,14 +293,17 @@ class RO
      * @return $this
      * @throws Exception
      */
-    public function setLine($line)
+    public function setLine($line, $header = null)
     {
         if(substr($line, 0, 1) != TipoRegistro::CIELO_RO)
             throw new Exception('Tipo registro inválido');
 
-        $this->tipoRegistro = substr($line, 0,1); //1
-        $this->estabelecimento = substr($line, 1,10); //0585494375
-        $this->ro = substr($line, 11,7);
+        if($header instanceof Header)
+            $this->header = $header;
+
+        $this->tipoRegistro = substr($line, 0,1);
+        $this->estabelecimento = substr($line, 1,10);
+        $this->ro = substr($line, 10,7);
         $this->parcela = NumberHelper::toInt(substr($line, 18,2), 1);
         $this->filler = substr($line, 20,1);
         $this->plano = NumberHelper::toInt(substr($line, 21,2), 1);
