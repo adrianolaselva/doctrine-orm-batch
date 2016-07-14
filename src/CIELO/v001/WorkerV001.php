@@ -124,7 +124,7 @@ class WorkerV001 implements WorkerInterface
             switch(substr($row, 0, 1)){
                 case '0':
                     $this->header = new Header();
-                    //$this->header->setDataInicio(new \DateTime('now'));
+                    $this->header->setDataInicio(new \DateTime('now'));
                     $this->header->setLine($row, $fileName['hashFile']);
                     $header = $this->headerRepository->exists($this->header);
                     if(empty($header)){
@@ -153,14 +153,15 @@ class WorkerV001 implements WorkerInterface
                         $this->em->persist($this->cv);
                         continue;
                     }
+
                     $this->cv->setId($cv->getId());
                     $this->em->merge($this->cv);
                     break;
             }
         }
 
-//        $this->header->setDataFim(new \DateTime('now'));
-//        $this->em->merge($this->header);
+        $this->header->setDataFim(new \DateTime('now'));
+        $this->em->merge($this->header);
 
         $this->em->flush();
 

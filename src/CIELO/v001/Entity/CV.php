@@ -226,7 +226,7 @@ class CV
 
         $this->tipoRegistro = substr($line, 0,1);
         $this->estabelecimento = substr($line, 1,10);
-        $this->ro = substr($line, 10,7);
+        $this->numeroRO = substr($line, 10,7);
         $this->numeroCartao = substr($line, 18,19);
         $this->dataVenda = DateTimeHelper::formatDateYearTruncateToDateTime(substr($line, 39,6));
         $this->valor = NumberHelper::formatDecimalDiv(substr($line, 45,14));

@@ -60,31 +60,32 @@ class HeaderTest extends PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    public function testVariaveisAmbienteForamCarregadas(){
+    public function testVariaveisAmbienteForamCarregadas()
+    {
         $this->assertNotFalse(getenv("test.edi.pending"));
         $this->assertNotFalse(getenv("test.edi.proccessed"));
     }
 
-    public function testDiretoriosExistem(){
+    public function testDiretoriosExistem()
+    {
         $this->assertTrue(is_dir(HeaderTest::PATH_BASE . getenv("test.edi.pending")));
         $this->assertTrue(is_dir(HeaderTest::PATH_BASE . getenv("test.edi.proccessed")));
     }
 
-
-    public function testWorker(){
+    public function testWorker()
+    {
         $processed = HeaderTest::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . 'a3f6a234eb55bad93be092c20614a0750d930a51';
         $pending =  HeaderTest::PATH_BASE . getenv("test.edi.pending") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . 'a3f6a234eb55bad93be092c20614a0750d930a51';
 
-        $this->worker->run();
-//        try{
-//            if(is_file($processed)){
-//                $this->assertTrue(rename($processed,$pending), "Falha ao mover o arquivo para pasta pending");
-//            }
-//            $this->worker->run();
-//            $this->assertTrue(true);
-//        }catch (Exception $ex){
-//            $this->assertTrue(false, $ex->getMessage());
-//        }
+        try{
+            if(is_file($processed)){
+                $this->assertTrue(rename($processed,$pending), "Falha ao mover o arquivo para pasta pending");
+            }
+            $this->worker->run();
+            $this->assertTrue(true);
+        }catch (Exception $ex){
+            $this->assertTrue(false, $ex->getMessage());
+        }
     }
 
 }

@@ -10,6 +10,7 @@ class DirectoryCommon
 {
 
     public static function dirEDIFilesToArray($basePath, $directoryEdi = ''){
+        $result = [];
         $files = scandir($basePath . DIRECTORY_SEPARATOR . $directoryEdi);
         foreach ($files as $key => $value) {
             if (!in_array($value, [".", "..",".gitkeep",".gitignore"])) {
