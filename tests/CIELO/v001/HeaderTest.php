@@ -51,10 +51,6 @@ class HeaderTest extends PHPUnit_Framework_TestCase
         parent::setUp();
     }
 
-    public function testWorker(){
-        $this->worker->run();
-    }
-
     public function testVariaveisAmbienteForamCarregadas(){
         $this->assertNotFalse(getenv("test.edi.pending"));
         $this->assertNotFalse(getenv("test.edi.proccessed"));
@@ -65,57 +61,8 @@ class HeaderTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_dir(HeaderTest::PATH_BASE . getenv("test.edi.proccessed")));
     }
 
-//    public function testBultInsert()
-//    {
-//        $headerRepository = $this->em->getRepository(\CIELO\v001\Entity\Header::class);
-//        $roRepository = $this->em->getRepository(\CIELO\v001\Entity\RO::class);
-//
-//        $directories = \CIELO\Common\DirectoryCommon::dirEDIFilesToArray(
-//            HeaderTest::PATH_BASE . getenv("test.edi.pending"),
-//            \CIELO\Common\DirectoryCommon::DIRECTORY_EDI_CIELO);
-//
-//        foreach($directories as $key => $fileName)
-//        {
-//            $file = file_get_contents($fileName['fullName'], 'r');
-//            $rows = explode(PHP_EOL, $file);
-//
-//            foreach ($rows as $row) {
-//
-//                if(!is_numeric(substr($row, 0, 1)))
-//                    continue;
-//
-//                switch(substr($row, 0, 1)){
-//                    case '0':
-//                        $this->header = new \CIELO\v001\Entity\Header();
-//                        $this->header->setLine($row, $fileName['hashFile']);
-//
-//                        $header = $headerRepository->exists($this->header);
-//                        if(empty($header)){
-//                            $this->em->persist($this->header);
-//                            continue;
-//                        }
-//                        $this->header->setId($header->getId());
-//                        $this->em->merge($this->header);
-//                        break;
-//                    case '1':
-//                        $this->ro = new \CIELO\v001\Entity\RO();
-//                        $this->ro->setLine($row, $this->header);
-//
-//                        $ro = $roRepository->exists($this->ro);
-//                        if(empty($ro)){
-//                            $this->em->persist($this->ro);
-//                            continue;
-//                        }
-//                        $this->ro->setId($ro->getId());
-//                        $this->em->merge($this->ro);
-//                        break;
-//                }
-//            }
-//
-//            $this->em->flush();
-//        }
-//
-//        $this->assertEquals(true, true);
-//    }
+    public function testWorker(){
+        $this->worker->run();
+    }
 
 }

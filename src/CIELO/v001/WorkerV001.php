@@ -74,7 +74,6 @@ class WorkerV001 implements WorkerInterface
      */
     public function run()
     {
-        var_dump(__DIR__);
         if(!is_dir(WorkerV001::PATH_BASE . getenv("test.edi.pending")))
             throw new Exception("Pending directory não encontrado");
 
