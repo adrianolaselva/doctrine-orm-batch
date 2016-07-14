@@ -12,7 +12,7 @@ class DirectoryCommon
     public static function dirEDIFilesToArray($basePath, $directoryEdi = ''){
         $files = scandir($basePath . DIRECTORY_SEPARATOR . $directoryEdi);
         foreach ($files as $key => $value) {
-            if (!in_array($value, [".", ".."])) {
+            if (!in_array($value, [".", "..",".gitkeep",".gitignore"])) {
                 if (is_dir($basePath . DIRECTORY_SEPARATOR . $directoryEdi . DIRECTORY_SEPARATOR . $value)){
                     $result[$value] = DirectoryCommon::dirEDIFilesToArray($basePath . DIRECTORY_SEPARATOR . $directoryEdi . DIRECTORY_SEPARATOR . $value);
                     continue;

@@ -5,6 +5,7 @@ namespace CIELO\v001\Entity;
 use CIELO\Constants\TipoRegistro;
 use CIELO\Helpers\DateTimeHelper;
 use CIELO\Helpers\NumberHelper;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
@@ -34,6 +35,15 @@ class RO
      * @ORM\JoinColumn(name="id_header", referencedColumnName="id", nullable=false)
      */
     protected $header;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\CV",
+     *     mappedBy="cv",
+     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
+     */
+    protected $vcs;
 
     /**
      * @var string
@@ -108,28 +118,28 @@ class RO
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", nullable=true, precision=2)
+     * @ORM\Column(type="decimal", nullable=true, precision=12, scale=2)
      */
     protected $valorBruto;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", precision=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=12, scale=2, nullable=true)
      */
     protected $valorComissao;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", precision=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=12, scale=2, nullable=true)
      */
     protected $valorRejeitado;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", precision=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=12, scale=2, nullable=true)
      */
     protected $valorLiquido;
 
@@ -206,7 +216,7 @@ class RO
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", precision=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=12, scale=2, nullable=true)
      */
     protected $valorComplementar;
 
@@ -227,7 +237,7 @@ class RO
     /**
      * @var string
      *
-     * @ORM\Column(type="decimal", precision=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=12, scale=2, nullable=true)
      */
     protected $valorBrutoAntecipado;
 
@@ -248,21 +258,21 @@ class RO
     /**
      * @var string
      *
-     * @ORM\Column(type="float", precision=3, nullable=true)
+     * @ORM\Column(type="float", precision=3, scale=3, nullable=true)
      */
     protected $taxaComissao;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="float", precision=3, nullable=true)
+     * @ORM\Column(type="float", precision=3, scale=3, nullable=true)
      */
     protected $tarifa;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="float", precision=3, nullable=true)
+     * @ORM\Column(type="float", precision=3, scale=3, nullable=true)
      */
     protected $taxaGarantia;
 
@@ -285,6 +295,7 @@ class RO
      */
     public function __construct()
     {
+        $this->vcs = new ArrayCollection();
     }
 
     /**
@@ -1023,5 +1034,25 @@ class RO
         $this->header = $header;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getVcs()
+    {
+        return $this->vcs;
+    }
+
+    /**
+     * @param ArrayCollection $vc
+     * @return $this
+     */
+    public function addVcs(ArrayCollection $vc)
+    {
+        $this->vcs->add($vc);
+        return $this;
+    }
+
+
 
 }

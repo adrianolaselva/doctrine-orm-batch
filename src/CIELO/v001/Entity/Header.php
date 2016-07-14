@@ -134,6 +134,20 @@ class Header
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
+    protected $dataInicio;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $dataFim;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
     protected $dataImportacao;
 
     /**
@@ -485,5 +499,68 @@ class Header
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getDataAtualizacao()
+    {
+        return $this->dataAtualizacao;
+    }
+
+    /**
+     * @param \DateTime $dataAtualizacao
+     * @return Header
+     */
+    public function setDataAtualizacao($dataAtualizacao)
+    {
+        $this->dataAtualizacao = $dataAtualizacao;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataFim()
+    {
+        return $this->dataFim;
+    }
+
+    /**
+     * @param \DateTime $dataFim
+     * @return Header
+     */
+    public function setDataFim($dataFim)
+    {
+        $this->dataFim = $dataFim;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataInicio()
+    {
+        return $this->dataInicio;
+    }
+
+    /**
+     * @param \DateTime $dataInicio
+     * @return Header
+     */
+    public function setDataInicio($dataInicio)
+    {
+        $this->dataInicio = $dataInicio;
+        return $this;
+    }
+
+    /**
+     * @param ArrayCollection $ros
+     * @return Header
+     */
+    public function setRos($ros)
+    {
+        $this->ros = $ros;
+        return $this;
+    }
 
 }

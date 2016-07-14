@@ -6,8 +6,10 @@ use CIELO\Common\DirectoryCommon;
 use CIELO\Factories\WorkerInterface;
 use CIELO\Providers\DoctrineORMServiceProvider;
 use CIELO\Providers\ServiceContainer;
+use CIELO\v001\Entity\CV;
 use CIELO\v001\Entity\Header;
 use CIELO\v001\Entity\RO;
+use CIELO\v001\Repository\CVRepository;
 use CIELO\v001\Repository\HeaderRepository;
 use CIELO\v001\Repository\RORepository;
 use Exception;
@@ -39,6 +41,11 @@ class WorkerV001 implements WorkerInterface
     private $ro;
 
     /**
+     * @var CV
+     */
+    private $cv;
+
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
@@ -54,6 +61,11 @@ class WorkerV001 implements WorkerInterface
     private $roRepository;
 
     /**
+     * @var CVRepository
+     */
+    private $cvRepository;
+
+    /**
      * WorkerV001 constructor.
      */
     public function __construct()
@@ -64,9 +76,11 @@ class WorkerV001 implements WorkerInterface
 
         $this->header = new Header();
         $this->ro = new RO();
+        $this->cv = new CV();
 
         $this->headerRepository = $this->em->getRepository(Header::class);
         $this->roRepository = $this->em->getRepository(RO::class);
+        $this->cvRepository = $this->em->getRepository(CV::class);
     }
 
     /**
@@ -110,6 +124,7 @@ class WorkerV001 implements WorkerInterface
             switch(substr($row, 0, 1)){
                 case '0':
                     $this->header = new Header();
+                    //$this->header->setDataInicio(new \DateTime('now'));
                     $this->header->setLine($row, $fileName['hashFile']);
                     $header = $this->headerRepository->exists($this->header);
                     if(empty($header)){
@@ -130,8 +145,23 @@ class WorkerV001 implements WorkerInterface
                     $this->ro->setId($ro->getId());
                     $this->em->merge($this->ro);
                     break;
+                case '2':
+                    $this->cv = new CV();
+                    $this->cv->setLine($row, $this->ro);
+                    $cv = $this->cvRepository->exists($this->cv);
+                    if(empty($cv)){
+                        $this->em->persist($this->cv);
+                        continue;
+                    }
+                    $this->cv->setId($cv->getId());
+                    $this->em->merge($this->cv);
+                    break;
             }
         }
+
+//        $this->header->setDataFim(new \DateTime('now'));
+//        $this->em->merge($this->header);
+
         $this->em->flush();
 
         if(!rename(

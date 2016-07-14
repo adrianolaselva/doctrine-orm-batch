@@ -18,10 +18,18 @@ class DoctrineORMServiceProvider extends Container implements ServiceProviderInt
 
         //Doctrine config
         $isDevMode = true;
-        $connectionParams = parse_ini_file(
-            __DIR__ . DIRECTORY_SEPARATOR . '../../../config.ini'
-        );
-        $connectionParams['driverOptions'] = [
+        $params = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '../../../config.ini', true);
+
+        if(is_null($params['DATABASE']))
+            throw new \Exception("Conexão não configurada no arquivo config.ini");
+
+        if(is_null($params['EDI_DIRECTORIES']))
+            throw new \Exception("Diretórios não configurado no arquivo config.ini");
+
+        foreach($params['EDI_DIRECTORIES'] as $key => $value){
+            putenv("{$key}={$value}");
+        }
+        $params['DATABASE']['driverOptions'] = [
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
         ];
         $config = \Doctrine\ORM\Tools\Setup::createConfiguration($isDevMode);
@@ -31,7 +39,7 @@ class DoctrineORMServiceProvider extends Container implements ServiceProviderInt
         \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
         $config->setMetadataDriverImpl($driver);
 
-        $em = \Doctrine\ORM\EntityManager::create($connectionParams, $config);
+        $em = \Doctrine\ORM\EntityManager::create($params['DATABASE'], $config);
 
         $em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
         $em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');

@@ -13,7 +13,7 @@ use Doctrine\ORM\Query\AST\Join;
  */
 class RORepository extends EntityRepository
 {
-    public function exists(RO $header){
+    public function exists(RO $ro){
 //        $queryBuilder = $this->createQueryBuilder("ro")
 //            ->innerJoin('ro.header','he', Join::WITH, 'ro.header','he.id');
 //
@@ -24,9 +24,9 @@ class RORepository extends EntityRepository
 //        $queryBuilder->setParameter('id', $header->getId());
 
         return $this->findOneBy([
-            'header' => $header->getHeader(),
-            'numeroUnicoRO' => $header->getNumeroUnicoRO(),
-            'ro' => $header->getRo()
+            'header' => $ro->getHeader(),
+            'numeroUnicoRO' => $ro->getNumeroUnicoRO(),
+            'ro' => $ro->getRo()
         ]);
     }
 }
