@@ -5,3 +5,11 @@ port        = '3306'
 user        = 'root'
 password    = 'root'
 dbname      = 'edi'
+
+[EDI_DIRECTORIES]
+edi.pending    =   "var/mine/pending"
+edi.proccessed =   "var/mine/proccessed"
+
+[EDI_DIRECTORIES_TESTS]
+test.edi.pending    =   "var/mine/pending"
+test.edi.proccessed =   "var/mine/proccessed"
