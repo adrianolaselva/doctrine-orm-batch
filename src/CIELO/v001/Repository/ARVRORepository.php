@@ -13,7 +13,7 @@ class ARVRORepository extends EntityRepository
 {
     public function exists(ARVRO $arvRo){
         return $this->findOneBy([
-            'header' => $arvRo->getHeader(),
+            'arvDv' => $arvRo->getArvDv(),
             'estabelecimento' => $arvRo->getEstabelecimento(),
             'dataVencimentoRO' => $arvRo->getDataVencimentoRO(),
             'numeroUnicoRO' => $arvRo->getNumeroUnicoRO(),

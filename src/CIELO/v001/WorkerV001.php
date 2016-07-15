@@ -146,72 +146,101 @@ class WorkerV001 implements WorkerInterface
         $file = file_get_contents($fileName['fullName'], 'r');
         $rows = explode(PHP_EOL, $file);
 
-        foreach ($rows as $row) {
+        foreach ($rows as $row)
+        {
 
             if(!is_numeric(substr($row, 0, 1)))
                 continue;
 
-            switch(substr($row, 0, 1)){
-                case TipoRegistro::CIELO_HEADER:
-                    $this->header = new Header();
-                    $this->header->setDataInicio(new \DateTime('now'));
-                    $this->header->setLine($row, $fileName['hashFile']);
-                    $header = $this->headerRepository->exists($this->header);
-                    if(empty($header)){
-                        $this->em->persist($this->header);
-                        continue;
-                    }
-                    $this->header->setId($header->getId());
-                    $this->em->merge($this->header);
-                    break;
-                case TipoRegistro::CIELO_RO:
-                    echo 'ro';
-                    $this->ro = new RO();
-                    $this->ro->setLine($row, $this->header);
-                    $ro = $this->roRepository->exists($this->ro);
-                    if(empty($ro)){
-                        $this->em->persist($this->ro);
-                        continue;
-                    }
-                    $this->ro->setId($ro->getId());
-                    $this->em->merge($this->ro);
-                    break;
-                case TipoRegistro::CIELO_CV:
+            $tipoRegistro = substr($row, 0, 1);
 
-                    if($this->header->getOpcaoExtrato() == OpcaoExtrato::CIELO_OPCAO_EXTRATO_ANTECIPACAO_RECEBIVEIS)
-                        continue;
+            if($tipoRegistro == TipoRegistro::CIELO_HEADER)
+            {
+                $this->header->setDataInicio(new \DateTime('now'));
+                $this->header->setLine($row, $fileName['hashFile']);
+                $header = $this->headerRepository->exists($this->header);
+                if(empty($header)){
+                    $this->em->persist($this->header);
+                    continue;
+                }
+                $this->header->setId($header->getId());
+                $this->header = $this->em->merge($this->header);
+            }
 
-                    $this->cv = new CV();
-                    $this->cv->setLine($row, $this->ro);
-                    $cv = $this->cvRepository->exists($this->cv);
-                    if(empty($cv)){
-                        $this->em->persist($this->cv);
-                        continue;
+            switch($this->header->getOpcaoExtrato())
+            {
+                case OpcaoExtrato::CIELO_OPCAO_EXTRATO_VENDA_COM_CV_PARC_FUTURO:
+
+                    switch($tipoRegistro)
+                    {
+                        case TipoRegistro::CIELO_RO:
+                            $this->ro = new RO();
+                            $this->ro->setLine($row, $this->header);
+                            $ro = $this->roRepository->exists($this->ro);
+                            if(empty($ro)){
+                                $this->em->persist($this->ro);
+                                continue;
+                            }
+                            $this->ro->setId($ro->getId());
+                            $this->ro = $this->em->merge($this->ro);
+                            break;
+                        case TipoRegistro::CIELO_CV:
+                            $this->cv = new CV();
+                            $this->cv->setLine($row, $this->ro);
+                            $cv = $this->cvRepository->exists($this->cv);
+                            if(empty($cv)){
+                                $this->em->persist($this->cv);
+                                continue;
+                            }
+                            $this->cv->setId($cv->getId());
+                            $this->cv = $this->em->merge($this->cv);
+                            break;
                     }
-                    $this->cv->setId($cv->getId());
-                    $this->em->merge($this->cv);
+
                     break;
-                case TipoRegistro::CIELO_ARV_DV:
-                    $this->arvDv = new ARVDV();
-                    $this->arvDv->setLine($row, $this->header);
-                    $arvDv = $this->arvDvRepository->exists($this->arvDv);
-                    if(empty($arvDv)){
-                        $this->em->persist($this->arvDv);
-                        continue;
+                case OpcaoExtrato::CIELO_OPCAO_EXTRATO_ANTECIPACAO_RECEBIVEIS:
+
+                    switch($tipoRegistro)
+                    {
+                        case TipoRegistro::CIELO_ARV_DV:
+                            $this->arvDv = new ARVDV();
+                            $this->arvDv->setLine($row, $this->header);
+                            $arvDv = $this->arvDvRepository->exists($this->arvDv);
+                            if(empty($arvDv)){
+                                $this->em->persist($this->arvDv);
+                                continue;
+                            }
+                            $this->arvDv->setId($arvDv->getId());
+                            $this->arvDv = $this->em->merge($this->arvDv);
+                            break;
+                        case TipoRegistro::CIELO_ARV_RO:
+                            $this->arvRo = new ARVRO();
+                            $this->arvRo->setLine($row, $this->arvDv);
+                            $arvRo = $this->arvRoRepository->exists($this->arvRo);
+                            if(empty($arvRo)){
+                                $this->em->persist($this->arvRo);
+                                continue;
+                            }
+                            $this->arvRo->setId($arvRo->getId());
+                            $this->arvRo = $this->em->merge($this->arvRo);
+                            break;
+                        case TipoRegistro::CIELO_ARV_INF_ROS_ANTECIPADOS:
+                            /**
+                             * TODO: implementar importação
+                             */
+                            break;
+                        case TipoRegistro::CIELO_ARV_INF_RO_SALDO_ABERTO:
+                            /**
+                             * TODO: implementar importação, mais antes identificar em qual tipo de arquivo este registro vem
+                             */
+                            break;
+                        case TipoRegistro::CIELO_ARV_INF_POR_BANDEIRA_SALDO_ABERTO:
+                            /**
+                             * TODO: implementar importação, mais antes identificar em qual tipo de arquivo este registro vem
+                             */
+                            break;
                     }
-                    $this->arvDv->setId($arvDv->getId());
-                    $this->em->merge($this->arvDv);
-                    break;
-                case TipoRegistro::CIELO_ARV_RO:
-//                    $this->arvRo = new ARVRO();
-//                    $this->arvRo->setLine($row, $this->header);
-//                    $arvRo = $this->arvRoRepository->exists($this->arvRo);
-//                    if(empty($arvRo)){
-//                        $this->em->persist($this->arvRo);
-//                        continue;
-//                    }
-//                    $this->arvRo->setId($arvRo->getId());
-//                    $this->em->merge($this->arvRo);
+
                     break;
             }
         }
@@ -220,6 +249,7 @@ class WorkerV001 implements WorkerInterface
         $this->em->merge($this->header);
 
         $this->em->flush();
+        $this->em->clear();
 
         if(!rename(
             $fileName['fullName'], WorkerV001::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR

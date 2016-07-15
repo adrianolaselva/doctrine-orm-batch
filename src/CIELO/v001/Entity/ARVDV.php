@@ -178,7 +178,7 @@ class ARVDV
     /**
      * @var float
      *
-     * @ORM\Column(type="decimal", nullable=true, precision=2, scale=3)
+     * @ORM\Column(type="float", nullable=true, precision=3, scale=3)
      */
     protected $taxaDescontoAntecipacao;
 
@@ -213,7 +213,7 @@ class ARVDV
     /**
      * @var float
      *
-     * @ORM\Column(type="decimal", nullable=true, precision=2, scale=3)
+     * @ORM\Column(type="decimal", nullable=true, precision=12, scale=2)
      */
     protected $valorLiquidoAntecipacao;
 
@@ -245,33 +245,33 @@ class ARVDV
 
         if($header instanceof Header)
             $this->header = $header;
-var_dump(NumberHelper::formatDecimalDiv(substr($line, 140,5),3));
+
         $this->tipoRegistro = substr($line, 0,1);
         $this->estabelecimentoSubmissao = substr($line, 1,10);
         $this->numeroOperacaoFinanceira = substr($line, 10,9);
         $this->dataCreditoOperacao = DateTimeHelper::formatFromToDateTime(substr($line, 20,8), 'Ymd');
         $this->sinalBrutoValorAntecipacaoAVista = substr($line, 28,1);
-        $this->valorBrutoAntecipacaoAVista = NumberHelper::formatDecimal(substr($line, 29,13));
+        $this->valorBrutoAntecipacaoAVista = NumberHelper::formatDecimalDiv(substr($line, 29,13));
         $this->sinalAntecipacaoValorBrutoParcelado = substr($line, 42,1);
-        $this->valorBrutoAntecipacaoParcelado = NumberHelper::formatDecimal(substr($line, 43,13));
+        $this->valorBrutoAntecipacaoParcelado = NumberHelper::formatDecimalDiv(substr($line, 43,13));
         $this->sinalValorBrutoAntecipacaoEletronPreDatado = substr($line, 56,1);
-        $this->valorBrutoAntecipacaoEletronPreDatado = NumberHelper::formatDecimal(substr($line, 57,13));
+        $this->valorBrutoAntecipacaoEletronPreDatado = NumberHelper::formatDecimalDiv(substr($line, 57,13));
         $this->sinalValorBrutoAntecipacaoTotal = substr($line, 70,1);
-        $this->valorBrutoAntecipacaoTotal = NumberHelper::formatDecimal(substr($line, 71,13));
+        $this->valorBrutoAntecipacaoTotal = NumberHelper::formatDecimalDiv(substr($line, 71,13));
         $this->sinalValorLiquidoAntecipacaoAVista = substr($line, 84,1);
-        $this->valorLiquidoAntecipacaoAVista = NumberHelper::formatDecimal(substr($line, 85,13));
+        $this->valorLiquidoAntecipacaoAVista = NumberHelper::formatDecimalDiv(substr($line, 85,13));
         $this->sinalValorLiquidoAntecipacaoParcelado = substr($line, 98,1);
-        $this->valorLiquidoAntecipacaoParcelado = NumberHelper::formatDecimal(substr($line, 99,13));
+        $this->valorLiquidoAntecipacaoParcelado = NumberHelper::formatDecimalDiv(substr($line, 99,13));
         $this->sinalValorLiquivoAntecipacaoPreDatado = substr($line, 112,1);
-        $this->valorLiquidoAntecipacaoPreDatado = NumberHelper::formatDecimal(substr($line, 113,13));
+        $this->valorLiquidoAntecipacaoPreDatado = NumberHelper::formatDecimalDiv(substr($line, 113,13));
         $this->sinalValorLiquidoAntecipacaoTotal = substr($line, 126,1);
-        $this->valorLiquidoAntecipacaoTotal = NumberHelper::formatDecimal(substr($line, 127,13));
+        $this->valorLiquidoAntecipacaoTotal = NumberHelper::formatDecimalDiv(substr($line, 127,13));
         $this->taxaDescontoAntecipacao = NumberHelper::formatDecimalDiv(substr($line, 140,5),3);
         $this->codigoBancoDomicilio = substr($line, 145,4);
         $this->codigoAgenciaDomicilio = substr($line, 149,5);
         $this->codigoContaCorrenteDomicilio = substr($line, 154,14);
         $this->sinalValorLiquidoAntecipacao = substr($line, 168,1);
-        $this->valorLiquidoAntecipacao = NumberHelper::formatDecimal(substr($line, 169,13));
+        $this->valorLiquidoAntecipacao = NumberHelper::formatDecimalDiv(substr($line, 169,13));
         $this->usoCielo = substr($line, 182,68);
 
         return $this;

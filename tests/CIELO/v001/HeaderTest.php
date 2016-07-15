@@ -90,18 +90,18 @@ class HeaderTest extends PHPUnit_Framework_TestCase
 
     public function testWorkerCVParceladoFuturo()
     {
-//        $processed = HeaderTest::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . '58c005fa1abffa8518c10770e6259f215b07ed8a';
-//        $pending =  HeaderTest::PATH_BASE . getenv("test.edi.pending") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . '58c005fa1abffa8518c10770e6259f215b07ed8a';
-//
-//        try{
-//            if(is_file($processed)){
-//                $this->assertTrue(rename($processed,$pending), "Falha ao mover o arquivo para pasta pending");
-//            }
-//            $this->worker->run();
-//            $this->assertTrue(true);
-//        }catch (Exception $ex){
-//            $this->assertTrue(false, $ex->getMessage());
-//        }
+        $processed = HeaderTest::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . '58c005fa1abffa8518c10770e6259f215b07ed8a';
+        $pending =  HeaderTest::PATH_BASE . getenv("test.edi.pending") . DIRECTORY_SEPARATOR . 'cielo' . DIRECTORY_SEPARATOR . '58c005fa1abffa8518c10770e6259f215b07ed8a';
+
+        try{
+            if(is_file($processed)){
+                $this->assertTrue(rename($processed,$pending), "Falha ao mover o arquivo para pasta pending");
+            }
+            $this->worker->run();
+            $this->assertTrue(true);
+        }catch (Exception $ex){
+            $this->assertTrue(false, $ex->getMessage());
+        }
     }
 
 }

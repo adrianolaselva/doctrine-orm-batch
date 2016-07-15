@@ -27,12 +27,12 @@ class ARVRO
     protected $id;
 
     /**
-     * @var Header
+     * @var ARVDV
      *
-     * @ORM\ManyToOne(targetEntity="CIELO\v001\Entity\Header", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumn(name="id_header", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="CIELO\v001\Entity\ARVDV", fetch="EXTRA_LAZY")
+     * @ORM\JoinColumn(name="id_arvdv", referencedColumnName="id", nullable=false)
      */
-    protected $header;
+    protected $arvDv;
 
     /**
      * @var string
@@ -171,17 +171,17 @@ class ARVRO
 
     /**
      * @param $line
-     * @param Header $header
+     * @param ARVDV $arvDv
      * @return $this
      * @throws Exception
      */
-    public function setLine($line, $header = null)
+    public function setLine($line, $arvDv = null)
     {
         if(substr($line, 0, 1) != TipoRegistro::CIELO_ARV_RO)
             throw new Exception('Tipo registro inválido');
 
-        if($header instanceof Header)
-            $this->reader = $header;
+        if($arvDv instanceof ARVDV)
+            $this->arvDv = $arvDv;
 
         $this->tipoRegistro = substr($line, 0,1);
         $this->estabelecimento = substr($line, 1,10);
@@ -189,7 +189,7 @@ class ARVRO
         $this->dataVencimentoRO = DateTimeHelper::formatFromToDateTime(substr($line, 20,8), 'Ymd');
         $this->numeroROAntecipado = substr($line, 28,7);
         $this->parcelaAntecipada = substr($line, 35,2);
-        $this->totalParcelas = NumberHelper::formatDecimalDiv(substr($line, 37,2));
+        $this->totalParcelas = substr($line, 37,2);
         $this->sinalValorBrutoOriginalRO = substr($line, 39,1);
         $this->valorBrutoOriginalRO = NumberHelper::formatDecimalDiv(substr($line, 40,13));
         $this->sinalValorLiquidoOriginalRO = substr($line, 53,1);
@@ -199,81 +199,9 @@ class ARVRO
         $this->sinalValorLiquidoAntecipacaoRO = substr($line, 81,1);
         $this->valorLiquidoAntecipacaoRO = NumberHelper::formatDecimalDiv(substr($line, 82,13));
         $this->codigoBandeira = substr($line, 95,3);
-        $this->numeroUnicoRO = NumberHelper::formatDecimalDiv(substr($line, 98,22));
+        $this->numeroUnicoRO = substr($line, 98,22);
         $this->usoCielo = substr($line, 120,130);
 
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCodigoBandeira()
-    {
-        return $this->codigoBandeira;
-    }
-
-    /**
-     * @param string $codigoBandeira
-     * @return ARVRO
-     */
-    public function setCodigoBandeira($codigoBandeira)
-    {
-        $this->codigoBandeira = $codigoBandeira;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDataVencimentoRO()
-    {
-        return $this->dataVencimentoRO;
-    }
-
-    /**
-     * @param \DateTime $dataVencimentoRO
-     * @return ARVRO
-     */
-    public function setDataVencimentoRO($dataVencimentoRO)
-    {
-        $this->dataVencimentoRO = $dataVencimentoRO;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEstabelecimento()
-    {
-        return $this->estabelecimento;
-    }
-
-    /**
-     * @param string $estabelecimento
-     * @return ARVRO
-     */
-    public function setEstabelecimento($estabelecimento)
-    {
-        $this->estabelecimento = $estabelecimento;
-        return $this;
-    }
-
-    /**
-     * @return Header
-     */
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
-    /**
-     * @param Header $header
-     * @return ARVRO
-     */
-    public function setHeader($header)
-    {
-        $this->header = $header;
         return $this;
     }
 
@@ -296,146 +224,20 @@ class ARVRO
     }
 
     /**
-     * @return string
+     * @return Header
      */
-    public function getNumeroOperacaoAntecipacao()
+    public function getArvDv()
     {
-        return $this->numeroOperacaoAntecipacao;
+        return $this->arvDv;
     }
 
     /**
-     * @param string $numeroOperacaoAntecipacao
+     * @param Header $arvDv
      * @return ARVRO
      */
-    public function setNumeroOperacaoAntecipacao($numeroOperacaoAntecipacao)
+    public function setArvDv($arvDv)
     {
-        $this->numeroOperacaoAntecipacao = $numeroOperacaoAntecipacao;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumeroROAntecipado()
-    {
-        return $this->numeroROAntecipado;
-    }
-
-    /**
-     * @param string $numeroROAntecipado
-     * @return ARVRO
-     */
-    public function setNumeroROAntecipado($numeroROAntecipado)
-    {
-        $this->numeroROAntecipado = $numeroROAntecipado;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumeroUnicoRO()
-    {
-        return $this->numeroUnicoRO;
-    }
-
-    /**
-     * @param string $numeroUnicoRO
-     * @return ARVRO
-     */
-    public function setNumeroUnicoRO($numeroUnicoRO)
-    {
-        $this->numeroUnicoRO = $numeroUnicoRO;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getParcelaAntecipada()
-    {
-        return $this->parcelaAntecipada;
-    }
-
-    /**
-     * @param string $parcelaAntecipada
-     * @return ARVRO
-     */
-    public function setParcelaAntecipada($parcelaAntecipada)
-    {
-        $this->parcelaAntecipada = $parcelaAntecipada;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSinalValorBrutoAntecipacaoRO()
-    {
-        return $this->sinalValorBrutoAntecipacaoRO;
-    }
-
-    /**
-     * @param string $sinalValorBrutoAntecipacaoRO
-     * @return ARVRO
-     */
-    public function setSinalValorBrutoAntecipacaoRO($sinalValorBrutoAntecipacaoRO)
-    {
-        $this->sinalValorBrutoAntecipacaoRO = $sinalValorBrutoAntecipacaoRO;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSinalValorBrutoOriginalRO()
-    {
-        return $this->sinalValorBrutoOriginalRO;
-    }
-
-    /**
-     * @param string $sinalValorBrutoOriginalRO
-     * @return ARVRO
-     */
-    public function setSinalValorBrutoOriginalRO($sinalValorBrutoOriginalRO)
-    {
-        $this->sinalValorBrutoOriginalRO = $sinalValorBrutoOriginalRO;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSinalValorLiquidoAntecipacaoRO()
-    {
-        return $this->sinalValorLiquidoAntecipacaoRO;
-    }
-
-    /**
-     * @param string $sinalValorLiquidoAntecipacaoRO
-     * @return ARVRO
-     */
-    public function setSinalValorLiquidoAntecipacaoRO($sinalValorLiquidoAntecipacaoRO)
-    {
-        $this->sinalValorLiquidoAntecipacaoRO = $sinalValorLiquidoAntecipacaoRO;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSinalValorLiquidoOriginalRO()
-    {
-        return $this->sinalValorLiquidoOriginalRO;
-    }
-
-    /**
-     * @param string $sinalValorLiquidoOriginalRO
-     * @return ARVRO
-     */
-    public function setSinalValorLiquidoOriginalRO($sinalValorLiquidoOriginalRO)
-    {
-        $this->sinalValorLiquidoOriginalRO = $sinalValorLiquidoOriginalRO;
+        $this->arvDv = $arvDv;
         return $this;
     }
 
@@ -460,6 +262,96 @@ class ARVRO
     /**
      * @return string
      */
+    public function getEstabelecimento()
+    {
+        return $this->estabelecimento;
+    }
+
+    /**
+     * @param string $estabelecimento
+     * @return ARVRO
+     */
+    public function setEstabelecimento($estabelecimento)
+    {
+        $this->estabelecimento = $estabelecimento;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumeroOperacaoAntecipacao()
+    {
+        return $this->numeroOperacaoAntecipacao;
+    }
+
+    /**
+     * @param string $numeroOperacaoAntecipacao
+     * @return ARVRO
+     */
+    public function setNumeroOperacaoAntecipacao($numeroOperacaoAntecipacao)
+    {
+        $this->numeroOperacaoAntecipacao = $numeroOperacaoAntecipacao;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDataVencimentoRO()
+    {
+        return $this->dataVencimentoRO;
+    }
+
+    /**
+     * @param \DateTime $dataVencimentoRO
+     * @return ARVRO
+     */
+    public function setDataVencimentoRO($dataVencimentoRO)
+    {
+        $this->dataVencimentoRO = $dataVencimentoRO;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumeroROAntecipado()
+    {
+        return $this->numeroROAntecipado;
+    }
+
+    /**
+     * @param string $numeroROAntecipado
+     * @return ARVRO
+     */
+    public function setNumeroROAntecipado($numeroROAntecipado)
+    {
+        $this->numeroROAntecipado = $numeroROAntecipado;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParcelaAntecipada()
+    {
+        return $this->parcelaAntecipada;
+    }
+
+    /**
+     * @param string $parcelaAntecipada
+     * @return ARVRO
+     */
+    public function setParcelaAntecipada($parcelaAntecipada)
+    {
+        $this->parcelaAntecipada = $parcelaAntecipada;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getTotalParcelas()
     {
         return $this->totalParcelas;
@@ -478,36 +370,18 @@ class ARVRO
     /**
      * @return string
      */
-    public function getUsoCielo()
+    public function getSinalValorBrutoOriginalRO()
     {
-        return $this->usoCielo;
+        return $this->sinalValorBrutoOriginalRO;
     }
 
     /**
-     * @param string $usoCielo
+     * @param string $sinalValorBrutoOriginalRO
      * @return ARVRO
      */
-    public function setUsoCielo($usoCielo)
+    public function setSinalValorBrutoOriginalRO($sinalValorBrutoOriginalRO)
     {
-        $this->usoCielo = $usoCielo;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getValorBrutoAntecipacaoRO()
-    {
-        return $this->valorBrutoAntecipacaoRO;
-    }
-
-    /**
-     * @param float $valorBrutoAntecipacaoRO
-     * @return ARVRO
-     */
-    public function setValorBrutoAntecipacaoRO($valorBrutoAntecipacaoRO)
-    {
-        $this->valorBrutoAntecipacaoRO = $valorBrutoAntecipacaoRO;
+        $this->sinalValorBrutoOriginalRO = $sinalValorBrutoOriginalRO;
         return $this;
     }
 
@@ -530,20 +404,20 @@ class ARVRO
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getValorLiquidoAntecipacaoRO()
+    public function getSinalValorLiquidoOriginalRO()
     {
-        return $this->valorLiquidoAntecipacaoRO;
+        return $this->sinalValorLiquidoOriginalRO;
     }
 
     /**
-     * @param float $valorLiquidoAntecipacaoRO
+     * @param string $sinalValorLiquidoOriginalRO
      * @return ARVRO
      */
-    public function setValorLiquidoAntecipacaoRO($valorLiquidoAntecipacaoRO)
+    public function setSinalValorLiquidoOriginalRO($sinalValorLiquidoOriginalRO)
     {
-        $this->valorLiquidoAntecipacaoRO = $valorLiquidoAntecipacaoRO;
+        $this->sinalValorLiquidoOriginalRO = $sinalValorLiquidoOriginalRO;
         return $this;
     }
 
@@ -562,6 +436,132 @@ class ARVRO
     public function setValorLiquidoOriginalRO($valorLiquidoOriginalRO)
     {
         $this->valorLiquidoOriginalRO = $valorLiquidoOriginalRO;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSinalValorBrutoAntecipacaoRO()
+    {
+        return $this->sinalValorBrutoAntecipacaoRO;
+    }
+
+    /**
+     * @param string $sinalValorBrutoAntecipacaoRO
+     * @return ARVRO
+     */
+    public function setSinalValorBrutoAntecipacaoRO($sinalValorBrutoAntecipacaoRO)
+    {
+        $this->sinalValorBrutoAntecipacaoRO = $sinalValorBrutoAntecipacaoRO;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getValorBrutoAntecipacaoRO()
+    {
+        return $this->valorBrutoAntecipacaoRO;
+    }
+
+    /**
+     * @param float $valorBrutoAntecipacaoRO
+     * @return ARVRO
+     */
+    public function setValorBrutoAntecipacaoRO($valorBrutoAntecipacaoRO)
+    {
+        $this->valorBrutoAntecipacaoRO = $valorBrutoAntecipacaoRO;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSinalValorLiquidoAntecipacaoRO()
+    {
+        return $this->sinalValorLiquidoAntecipacaoRO;
+    }
+
+    /**
+     * @param string $sinalValorLiquidoAntecipacaoRO
+     * @return ARVRO
+     */
+    public function setSinalValorLiquidoAntecipacaoRO($sinalValorLiquidoAntecipacaoRO)
+    {
+        $this->sinalValorLiquidoAntecipacaoRO = $sinalValorLiquidoAntecipacaoRO;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getValorLiquidoAntecipacaoRO()
+    {
+        return $this->valorLiquidoAntecipacaoRO;
+    }
+
+    /**
+     * @param float $valorLiquidoAntecipacaoRO
+     * @return ARVRO
+     */
+    public function setValorLiquidoAntecipacaoRO($valorLiquidoAntecipacaoRO)
+    {
+        $this->valorLiquidoAntecipacaoRO = $valorLiquidoAntecipacaoRO;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCodigoBandeira()
+    {
+        return $this->codigoBandeira;
+    }
+
+    /**
+     * @param string $codigoBandeira
+     * @return ARVRO
+     */
+    public function setCodigoBandeira($codigoBandeira)
+    {
+        $this->codigoBandeira = $codigoBandeira;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumeroUnicoRO()
+    {
+        return $this->numeroUnicoRO;
+    }
+
+    /**
+     * @param string $numeroUnicoRO
+     * @return ARVRO
+     */
+    public function setNumeroUnicoRO($numeroUnicoRO)
+    {
+        $this->numeroUnicoRO = $numeroUnicoRO;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsoCielo()
+    {
+        return $this->usoCielo;
+    }
+
+    /**
+     * @param string $usoCielo
+     * @return ARVRO
+     */
+    public function setUsoCielo($usoCielo)
+    {
+        $this->usoCielo = $usoCielo;
         return $this;
     }
 

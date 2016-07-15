@@ -29,14 +29,14 @@ class Header
      */
     protected $id;
 
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\RO",
-     *     mappedBy="header",
-     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
-     */
-    protected $ros;
+//    /**
+//     * @var ArrayCollection
+//     *
+//     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\RO",
+//     *     mappedBy="header",
+//     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
+//     */
+//    protected $ros;
 
     /**
      * @var string
@@ -163,7 +163,7 @@ class Header
      */
     public function __construct()
     {
-        $this->ros = new ArrayCollection();
+        //$this->ros = new ArrayCollection();
     }
 
     /**
@@ -229,23 +229,23 @@ class Header
         return $this;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getRo()
-    {
-        return $this->ros;
-    }
-
-    /**
-     * @param RO $ro
-     * @return $this
-     */
-    public function addRo(RO $ro)
-    {
-        $this->ros->add($ro);
-        return $this;
-    }
+//    /**
+//     * @return ArrayCollection
+//     */
+//    public function getRo()
+//    {
+//        return $this->ros;
+//    }
+//
+//    /**
+//     * @param RO $ro
+//     * @return $this
+//     */
+//    public function addRo(RO $ro)
+//    {
+//        $this->ros->add($ro);
+//        return $this;
+//    }
 
     /**
      * @return string

@@ -10,22 +10,22 @@ class NumberHelper
 {
     public static function formatDecimal($number, $precision = 2, $default = 0){
         if(is_numeric($number)){
-            return number_format($number, $precision);
+            return doubleval($number);
         }
-        return $default;
+        return doubleval($default);
     }
 
     public static function formatDecimalDiv($number, $precision = 2, $default = 0){
         if(is_numeric($number)){
-            return number_format($number/100, $precision);
+            return doubleval($number/100);
         }
-        return $default;
+        return doubleval($default);
     }
 
     public static function toInt($number, $default = 0){
         if(is_numeric($number)){
-            return number_format($number);
+            return intval(number_format($number));
         }
-        return $default;
+        return intval($default);
     }
 }
