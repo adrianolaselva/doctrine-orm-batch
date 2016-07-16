@@ -40,7 +40,7 @@ class RO
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\CV",
-     *     mappedBy="cv",
+     *     mappedBy="ro",
      *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
      */
     protected $vcs;

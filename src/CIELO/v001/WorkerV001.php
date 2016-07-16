@@ -10,6 +10,7 @@ use CIELO\Providers\DoctrineORMServiceProvider;
 use CIELO\Providers\ServiceContainer;
 use CIELO\v001\Entity\ARVDV;
 use CIELO\v001\Entity\ARVRO;
+use CIELO\v001\Entity\ARVRODebito;
 use CIELO\v001\Entity\CV;
 use CIELO\v001\Entity\Header;
 use CIELO\v001\Entity\RO;
@@ -27,7 +28,7 @@ use Exception;
 class WorkerV001 implements WorkerInterface
 {
 
-    const PATH_BASE = __DIR__ . DIRECTORY_SEPARATOR . '../../../tests/';
+    const PATH_BASE = __DIR__ . DIRECTORY_SEPARATOR . '../../../';
 
     const DIRECTORY = 'cielo';
 
@@ -62,6 +63,11 @@ class WorkerV001 implements WorkerInterface
     private $arvRo;
 
     /**
+     * @var ARVRODebito
+     */
+    private $arvRoDebito;
+
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
@@ -92,6 +98,11 @@ class WorkerV001 implements WorkerInterface
     private $arvRoRepository;
 
     /**
+     * @var ARVRORepository
+     */
+    private $arvRoDebitoRepository;
+
+    /**
      * WorkerV001 constructor.
      */
     public function __construct()
@@ -111,6 +122,7 @@ class WorkerV001 implements WorkerInterface
         $this->cvRepository = $this->em->getRepository(CV::class);
         $this->arvDvRepository = $this->em->getRepository(ARVDV::class);
         $this->arvRoRepository = $this->em->getRepository(ARVRO::class);
+        $this->arvRoDebitoRepository = $this->em->getRepository(ARVRODebito::class);
     }
 
     /**
@@ -118,25 +130,28 @@ class WorkerV001 implements WorkerInterface
      */
     public function run()
     {
-        if(!is_dir(WorkerV001::PATH_BASE . getenv("test.edi.pending")))
+        if(!is_dir(WorkerV001::PATH_BASE . getenv("edi.pending")))
             throw new Exception("Pending directory não encontrado");
 
-        if(!is_dir(WorkerV001::PATH_BASE . getenv("test.edi.proccessed")))
+        if(!is_dir(WorkerV001::PATH_BASE . getenv("edi.proccessed")))
             throw new Exception("Proccessed directory não encontrado");
 
         $directories = DirectoryCommon::dirEDIFilesToArray(
-            WorkerV001::PATH_BASE . getenv("test.edi.pending"),
+            WorkerV001::PATH_BASE . getenv("edi.pending"),
             WorkerV001::DIRECTORY);
 
-        try{
-            $this->em->beginTransaction();
-            foreach($directories as $key => $fileName)
-            {
+        foreach($directories as $key => $fileName)
+        {
+            try{
+                $this->em->beginTransaction();
+
                 $this->importer($fileName);
+                $this->moveToProccessed($fileName);
+
+                $this->em->commit();
+            }catch(Exception $ex){
+                $this->em->rollback();
             }
-            $this->em->commit();
-        }catch(Exception $ex){
-            $this->em->rollback();
         }
 
     }
@@ -225,9 +240,15 @@ class WorkerV001 implements WorkerInterface
                             $this->arvRo = $this->em->merge($this->arvRo);
                             break;
                         case TipoRegistro::CIELO_ARV_INF_ROS_ANTECIPADOS:
-                            /**
-                             * TODO: implementar importação
-                             */
+                            $this->arvRoDebito = new ARVRODebito();
+                            $this->arvRoDebito->setLine($row, $this->arvDv);
+                            $arvRoDebito = $this->arvRoDebitoRepository->exists($this->arvRoDebito);
+                            if(empty($arvRoDebito)){
+                                $this->em->persist($this->arvRoDebito);
+                                continue;
+                            }
+                            $this->arvRoDebito->setId($arvRoDebito->getId());
+                            $this->arvRoDebito = $this->em->merge($this->arvRoDebito);
                             break;
                         case TipoRegistro::CIELO_ARV_INF_RO_SALDO_ABERTO:
                             /**
@@ -251,8 +272,15 @@ class WorkerV001 implements WorkerInterface
         $this->em->flush();
         $this->em->clear();
 
+    }
+
+    /**
+     * @param $fileName
+     * @throws Exception
+     */
+    private function moveToProccessed($fileName){
         if(!rename(
-            $fileName['fullName'], WorkerV001::PATH_BASE . getenv("test.edi.proccessed") . DIRECTORY_SEPARATOR
+            $fileName['fullName'], WorkerV001::PATH_BASE . getenv("edi.proccessed") . DIRECTORY_SEPARATOR
             . WorkerV001::DIRECTORY . DIRECTORY_SEPARATOR . $fileName['hashFile'])
         )
             throw new Exception("Falha ao mover arquivo, importação não efetivada");

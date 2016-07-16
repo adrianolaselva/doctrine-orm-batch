@@ -9,7 +9,7 @@ use Pimple\ServiceProviderInterface;
  * Class DoctrineORMServiceProvider
  * @package CIELO\Providers
  */
-class DoctrineORMServiceProvider extends Container implements ServiceProviderInterface
+class DoctrineORMServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $container)
     {
