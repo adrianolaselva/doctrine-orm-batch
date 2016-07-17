@@ -144,10 +144,8 @@ class WorkerV001 implements WorkerInterface
         {
             try{
                 $this->em->beginTransaction();
-
                 $this->importer($fileName);
                 $this->moveToProccessed($fileName);
-
                 $this->em->commit();
             }catch(Exception $ex){
                 $this->em->rollback();
@@ -161,7 +159,7 @@ class WorkerV001 implements WorkerInterface
         $file = file_get_contents($fileName['fullName'], 'r');
         $rows = explode(PHP_EOL, $file);
 
-        foreach ($rows as $row)
+        foreach ($rows as $key => $row)
         {
 
             if(!is_numeric(substr($row, 0, 1)))
@@ -171,14 +169,15 @@ class WorkerV001 implements WorkerInterface
 
             if($tipoRegistro == TipoRegistro::CIELO_HEADER)
             {
-                $this->header->setDataInicio(new \DateTime('now'));
+                $this->header->setLinhas(count($rows));
                 $this->header->setLine($row, $fileName['hashFile']);
                 $header = $this->headerRepository->exists($this->header);
                 if(empty($header)){
                     $this->em->persist($this->header);
                     continue;
                 }
-                $this->header->setId($header->getId());
+                $this->header = $header;
+                $this->header->setLine($row, $fileName['hashFile']);
                 $this->header = $this->em->merge($this->header);
             }
 
@@ -264,10 +263,8 @@ class WorkerV001 implements WorkerInterface
 
                     break;
             }
-        }
 
-        $this->header->setDataFim(new \DateTime('now'));
-        $this->em->merge($this->header);
+        }
 
         $this->em->flush();
         $this->em->clear();

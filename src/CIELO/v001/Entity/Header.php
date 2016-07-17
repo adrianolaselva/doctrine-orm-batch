@@ -6,7 +6,6 @@ use CIELO\Constants\TipoRegistro;
 use CIELO\Constants\Versao;
 use CIELO\Helpers\DateTimeHelper;
 use CIELO\Helpers\NumberHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
@@ -130,18 +129,11 @@ class Header
     protected $arquivo;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    protected $dataInicio;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    protected $dataFim;
+    protected $linhas;
 
     /**
      * @var \DateTime
@@ -228,24 +220,6 @@ class Header
         $this->id = $id;
         return $this;
     }
-
-//    /**
-//     * @return ArrayCollection
-//     */
-//    public function getRo()
-//    {
-//        return $this->ros;
-//    }
-//
-//    /**
-//     * @param RO $ro
-//     * @return $this
-//     */
-//    public function addRo(RO $ro)
-//    {
-//        $this->ros->add($ro);
-//        return $this;
-//    }
 
     /**
      * @return string
@@ -518,48 +492,20 @@ class Header
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
-    public function getDataFim()
+    public function getLinhas()
     {
-        return $this->dataFim;
+        return $this->linhas;
     }
 
     /**
-     * @param \DateTime $dataFim
+     * @param string $linhas
      * @return Header
      */
-    public function setDataFim($dataFim)
+    public function setLinhas($linhas)
     {
-        $this->dataFim = $dataFim;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDataInicio()
-    {
-        return $this->dataInicio;
-    }
-
-    /**
-     * @param \DateTime $dataInicio
-     * @return Header
-     */
-    public function setDataInicio($dataInicio)
-    {
-        $this->dataInicio = $dataInicio;
-        return $this;
-    }
-
-    /**
-     * @param ArrayCollection $ros
-     * @return Header
-     */
-    public function setRos($ros)
-    {
-        $this->ros = $ros;
+        $this->linhas = $linhas;
         return $this;
     }
 
