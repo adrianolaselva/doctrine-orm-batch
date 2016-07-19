@@ -22,7 +22,7 @@ use CIELO\v001\Repository\RORepository;
  * Class WorkerV001
  * @package CIELO\v001
  */
-class WorkerV001 implements WorkerInterfac
+class WorkerV001 implements WorkerInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManager

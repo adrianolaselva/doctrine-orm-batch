@@ -3,8 +3,8 @@
 namespace CIELO\Factories;
 
 /**
- * Interface IWorker
- * @package CIELO
+ * Interface WorkerInterface
+ * @package CIELO\Factories
  */
 interface WorkerInterface
 {
