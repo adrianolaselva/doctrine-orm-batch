@@ -8,5 +8,5 @@ namespace CIELO\Factories;
  */
 interface WorkerInterface
 {
-    public function run();
+    public function importer($fileName, $rows);
 }

@@ -169,7 +169,7 @@ class Header
             throw new Exception('Tipo registro inválido');
 
         if(substr($line, 70, 3) != Versao::CIELO_VERSAO_001)
-            throw new Exception('Versão inválida');
+        throw new Exception('Versão inválida');
 
         $this->tipoRegistro = NumberHelper::toInt(substr($line, 0, 1));
         $this->estabelecimentoMatriz = substr($line, 1, 10);

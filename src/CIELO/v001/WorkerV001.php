@@ -2,11 +2,9 @@
 
 namespace CIELO\v001;
 
-use CIELO\Common\DirectoryCommon;
 use CIELO\Constants\OpcaoExtrato;
 use CIELO\Constants\TipoRegistro;
 use CIELO\Factories\WorkerInterface;
-use CIELO\Providers\DoctrineORMServiceProvider;
 use CIELO\Providers\ServiceContainer;
 use CIELO\v001\Entity\ARVDV;
 use CIELO\v001\Entity\ARVRO;
@@ -19,23 +17,17 @@ use CIELO\v001\Repository\ARVRORepository;
 use CIELO\v001\Repository\CVRepository;
 use CIELO\v001\Repository\HeaderRepository;
 use CIELO\v001\Repository\RORepository;
-use Exception;
 
 /**
  * Class WorkerV001
  * @package CIELO\v001
  */
-class WorkerV001 implements WorkerInterface
+class WorkerV001 implements WorkerInterfac
 {
-
-    const PATH_BASE = __DIR__ . DIRECTORY_SEPARATOR . '../../../';
-
-    const DIRECTORY = 'cielo';
-
     /**
-     * @var ServiceContainer
+     * @var \Doctrine\ORM\EntityManager
      */
-    private $container;
+    private $em;
 
     /**
      * @var Header
@@ -66,11 +58,6 @@ class WorkerV001 implements WorkerInterface
      * @var ARVRODebito
      */
     private $arvRoDebito;
-
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
 
     /**
      * @var HeaderRepository
@@ -105,17 +92,9 @@ class WorkerV001 implements WorkerInterface
     /**
      * WorkerV001 constructor.
      */
-    public function __construct()
+    public function __construct($em)
     {
-        $this->container = new ServiceContainer();
-        $this->container->register(new DoctrineORMServiceProvider());
-        $this->em = $this->container['em'];
-
-        $this->header = new Header();
-        $this->ro = new RO();
-        $this->cv = new CV();
-        $this->arvDv = new ARVDV();
-        $this->arvRo = new ARVRO();
+        $this->em = $em;
 
         $this->headerRepository = $this->em->getRepository(Header::class);
         $this->roRepository = $this->em->getRepository(RO::class);
@@ -123,45 +102,22 @@ class WorkerV001 implements WorkerInterface
         $this->arvDvRepository = $this->em->getRepository(ARVDV::class);
         $this->arvRoRepository = $this->em->getRepository(ARVRO::class);
         $this->arvRoDebitoRepository = $this->em->getRepository(ARVRODebito::class);
+
+        $this->header = new Header();
+        $this->ro = new RO();
+        $this->cv = new CV();
+        $this->arvDv = new ARVDV();
+        $this->arvRo = new ARVRO();
     }
 
     /**
-     * @throws Exception
+     * @param $fileName
+     * @param $rows
      */
-    public function run()
+    public function importer($fileName, $rows)
     {
-        if(!is_dir(WorkerV001::PATH_BASE . getenv("edi.pending")))
-            throw new Exception("Pending directory não encontrado");
-
-        if(!is_dir(WorkerV001::PATH_BASE . getenv("edi.proccessed")))
-            throw new Exception("Proccessed directory não encontrado");
-
-        $directories = DirectoryCommon::dirEDIFilesToArray(
-            WorkerV001::PATH_BASE . getenv("edi.pending"),
-            WorkerV001::DIRECTORY);
-
-        foreach($directories as $key => $fileName)
-        {
-            try{
-                $this->em->beginTransaction();
-                $this->importer($fileName);
-                $this->moveToProccessed($fileName);
-                $this->em->commit();
-            }catch(Exception $ex){
-                $this->em->rollback();
-            }
-        }
-
-    }
-
-    private function importer($fileName)
-    {
-        $file = file_get_contents($fileName['fullName'], 'r');
-        $rows = explode(PHP_EOL, $file);
-
         foreach ($rows as $key => $row)
         {
-
             if(!is_numeric(substr($row, 0, 1)))
                 continue;
 
@@ -271,15 +227,4 @@ class WorkerV001 implements WorkerInterface
 
     }
 
-    /**
-     * @param $fileName
-     * @throws Exception
-     */
-    private function moveToProccessed($fileName){
-        if(!rename(
-            $fileName['fullName'], WorkerV001::PATH_BASE . getenv("edi.proccessed") . DIRECTORY_SEPARATOR
-            . WorkerV001::DIRECTORY . DIRECTORY_SEPARATOR . $fileName['hashFile'])
-        )
-            throw new Exception("Falha ao mover arquivo, importação não efetivada");
-    }
 }
