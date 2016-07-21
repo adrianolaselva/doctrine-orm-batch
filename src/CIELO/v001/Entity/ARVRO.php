@@ -13,7 +13,17 @@ use Exception;
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\ARVRORepository")
- * @ORM\Table(name="v001_arvro")
+ * @ORM\Table(name="v001_arvro", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="arvro_unique",
+ *          columns={
+ *     "id_arvDv","estabelecimento",
+ *     "numeroOperacaoAntecipacao","dataVencimentoRO",
+ *     "numeroROAntecipado","parcelaAntecipada","totalParcelas",
+ *     "valorBrutoOriginalRO","valorLiquidoOriginalRO",
+ *     "valorBrutoAntecipacaoRO","codigoBandeira",
+ *     "valorLiquidoAntecipacaoRO"
+ *          }
+ *     )})
  */
 class ARVRO
 {
@@ -44,14 +54,14 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30,nullable=true)
      */
     protected $estabelecimento;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30,nullable=true)
      */
     protected $numeroOperacaoAntecipacao;
 
@@ -65,28 +75,28 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30,nullable=true)
      */
     protected $numeroROAntecipado;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=10,nullable=true)
      */
     protected $parcelaAntecipada;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=10,nullable=true)
      */
     protected $totalParcelas;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=2,nullable=true)
      */
     protected $sinalValorBrutoOriginalRO;
 
@@ -100,7 +110,7 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=2,nullable=true)
      */
     protected $sinalValorLiquidoOriginalRO;
 
@@ -114,7 +124,7 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=2,nullable=true)
      */
     protected $sinalValorBrutoAntecipacaoRO;
 
@@ -128,7 +138,7 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=2,nullable=true)
      */
     protected $sinalValorLiquidoAntecipacaoRO;
 
@@ -142,14 +152,14 @@ class ARVRO
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=20,nullable=true)
      */
     protected $codigoBandeira;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", length=30,nullable=true)
      */
     protected $numeroUnicoRO;
 

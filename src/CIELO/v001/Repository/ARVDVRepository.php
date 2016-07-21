@@ -3,6 +3,7 @@
 namespace CIELO\v001\Repository;
 
 use CIELO\v001\Entity\ARVDV;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -25,4 +26,6 @@ class ARVDVRepository extends EntityRepository
             'valorLiquidoAntecipacaoTotal' => $arvDv->getValorLiquidoAntecipacaoTotal(),
         ]);
     }
+
+
 }

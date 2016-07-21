@@ -9,12 +9,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
+
 /**
  * Class RO
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\ARVDVRepository")
- * @ORM\Table(name="v001_arvdv")
+ * @ORM\Table(name="v001_arvdv", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="arvdv_unique",
+ *          columns={
+ *     "id_header","dataCreditoOperacao",
+ *     "numeroOperacaoFinanceira","valorBrutoAntecipacaoAVista",
+ *     "valorBrutoAntecipacaoParcelado","valorBrutoAntecipacaoEletronPreDatado",
+ *     "valorBrutoAntecipacaoTotal","valorLiquidoAntecipacaoAVista",
+ *     "valorLiquidoAntecipacaoParcelado","valorLiquidoAntecipacaoTotal"
+ *          }
+ *     )})
  */
 class ARVDV
 {

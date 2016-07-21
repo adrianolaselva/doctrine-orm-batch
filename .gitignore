@@ -5,3 +5,4 @@ composer.lock
 config.xml
 var/mine/pending/*
 var/mine/proccessed/*
+logs/*

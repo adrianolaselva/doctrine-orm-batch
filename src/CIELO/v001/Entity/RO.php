@@ -14,7 +14,10 @@ use Exception;
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\RORepository")
- * @ORM\Table(name="v001_ro")
+ * @ORM\Table(name="v001_ro", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="ro_unique",
+ *          columns={"id_header","estabelecimento","numeroUnicoRO","parcela","dataApresentacao"}
+ *     )})
  * @ORM\HasLifecycleCallbacks()
  */
 class RO
@@ -35,15 +38,6 @@ class RO
      * @ORM\JoinColumn(name="id_header", referencedColumnName="id", nullable=false)
      */
     protected $header;
-
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\CV",
-     *     mappedBy="ro",
-     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
-     */
-    protected $vcs;
 
     /**
      * @var string
@@ -290,12 +284,13 @@ class RO
      */
     protected $numeroLogico;
 
+
     /**
      * RO constructor.
      */
     public function __construct()
     {
-        $this->vcs = new ArrayCollection();
+
     }
 
     /**
@@ -334,7 +329,7 @@ class RO
         $this->qtdCVRejeitados = NumberHelper::toInt(substr($line, 132,6));
         $this->revenda = substr($line, 138,1);
         $this->dataCaptura = DateTimeHelper::formatDateYearTruncateToDateTime(substr($line, 139,6));
-        $this->cieloAjusteId = substr($line, 145,2);
+        $this->cieloAjusteId = NumberHelper::toInt(substr($line, 145,2));
         $this->valorComplementar = NumberHelper::formatDecimalDiv(substr($line, 147,13));
         $this->produtoFinanceiro = substr($line, 160,1);
         $this->operacaoFinanceira = substr($line, 161,9);
@@ -1034,25 +1029,5 @@ class RO
         $this->header = $header;
         return $this;
     }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getVcs()
-    {
-        return $this->vcs;
-    }
-
-    /**
-     * @param ArrayCollection $vc
-     * @return $this
-     */
-    public function addVcs(ArrayCollection $vc)
-    {
-        $this->vcs->add($vc);
-        return $this;
-    }
-
-
 
 }

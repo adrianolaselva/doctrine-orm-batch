@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        "doctrine/orm": "~2.5",
+        "doctrine/orm": "2.5.*",
         "symfony/yaml": "2.*",
         "apache/log4php": "2.3.0",
         "phpunit/phpunit": "5.4.6",

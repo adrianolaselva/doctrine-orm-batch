@@ -14,7 +14,10 @@ use Exception;
  * @package CIELO\v001\Entity
  * 
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\CVRepository")
- * @ORM\Table(name="v001_cv")
+ * @ORM\Table(name="v001_cv", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="cv_unique",
+ *          columns={"id_ro","estabelecimento","numeroCartao","numeroLogico","autorizacao","dataVenda"}
+ *     )})
  */
 class CV
 {
@@ -202,6 +205,7 @@ class CV
      * @ORM\Column(type="string", nullable=true)
      */
     protected $indicadorPP;
+
 
     /**
      * CV constructor.

@@ -2,6 +2,12 @@
 
 namespace CIELO\Providers;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Tools\Setup;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -13,9 +19,6 @@ class DoctrineORMServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $container)
     {
-        //Configurações de log
-        \Logger::configure(__DIR__ . DIRECTORY_SEPARATOR . '../../../config.xml');
-
         //Doctrine config
         $isDevMode = true;
         $params = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '../../../config.ini', true);
@@ -32,14 +35,17 @@ class DoctrineORMServiceProvider implements ServiceProviderInterface
         $params['DATABASE']['driverOptions'] = [
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
         ];
-        $config = \Doctrine\ORM\Tools\Setup::createConfiguration($isDevMode);
-        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader(), [
+        $config = Setup::createConfiguration($isDevMode);
+        $driver = new AnnotationDriver(new AnnotationReader(), [
             __DIR__ . DIRECTORY_SEPARATOR . '../v001/Entity'
         ]);
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+        AnnotationRegistry::registerLoader('class_exists');
         $config->setMetadataDriverImpl($driver);
 
-        $em = \Doctrine\ORM\EntityManager::create($params['DATABASE'], $config);
+        $arrayCache = new ArrayCache();
+        $config->setQueryCacheImpl($arrayCache);
+
+        $em = EntityManager::create($params['DATABASE'], $config);
 
         $em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
         $em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');

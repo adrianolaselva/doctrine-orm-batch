@@ -14,6 +14,7 @@ use Exception;
  */
 class WorkerFactory
 {
+
     public static function getInstance($versao){
 
         $container = new ServiceContainer();

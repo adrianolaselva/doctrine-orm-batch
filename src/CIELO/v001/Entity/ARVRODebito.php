@@ -8,12 +8,20 @@ use CIELO\Helpers\NumberHelper;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
+
 /**
  * Class ARVRODebito
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\ARVRODebitoRepository")
- * @ORM\Table(name="v001_arvrodebito")
+ * @ORM\Table(name="v001_arvrodebito", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="arvrodebito_unique",
+ *          columns={
+ *     "id_arvDv","estabelecimento",
+ *     "dataPagamentoAjuste","numeroRoAntecipado",
+ *     "numeroRoVendaOriginouAjuste","numeroUnicoRoOriginalVenda"
+ *          }
+ *     )})
  */
 class ARVRODebito
 {

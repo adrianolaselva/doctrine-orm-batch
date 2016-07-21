@@ -14,7 +14,10 @@ use Exception;
  * @package CIELO\v001\Entity
  *
  * @ORM\Entity(repositoryClass="CIELO\v001\Repository\HeaderRepository")
- * @ORM\Table(name="v001_header")
+ * @ORM\Table(name="v001_header", uniqueConstraints={@ORM\UniqueConstraint(
+ *          name="header_unique",
+ *          columns={"arquivo","estabelecimentoMatriz","dataProcessamento","sequencia","opcaoExtrato","caixaPostal"}
+ *     )})
  * @ORM\HasLifecycleCallbacks()
  */
 class Header
@@ -28,14 +31,12 @@ class Header
      */
     protected $id;
 
-//    /**
-//     * @var ArrayCollection
-//     *
-//     * @ORM\OneToMany(targetEntity="CIELO\v001\Entity\RO",
-//     *     mappedBy="header",
-//     *     cascade={"persist", "remove", "merge"}, fetch="EXTRA_LAZY")
-//     */
-//    protected $ros;
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=90,nullable=true)
+     */
+    protected $arquivo;
 
     /**
      * @var string
@@ -120,13 +121,6 @@ class Header
      * @ORM\Column(type="string", nullable=true)
      */
     protected $usoCielo;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=90,nullable=true)
-     */
-    protected $arquivo;
 
     /**
      * @var string

@@ -8,7 +8,7 @@ class WorkerTest extends PHPUnit_Framework_TestCase
     const PATH_BASE = __DIR__ . DIRECTORY_SEPARATOR . '../../';
 
     /**
-     * @var \CIELO\Factories\WorkerInterface
+     * @var \CIELO\Worker
      */
     private $worker;
 
@@ -17,7 +17,7 @@ class WorkerTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->worker = \CIELO\Factories\WorkerFactory::getInstance(\CIELO\Constants\Versao::CIELO_VERSAO_001);
+        $this->worker = new \CIELO\Worker();
 
         parent::setUp();
     }

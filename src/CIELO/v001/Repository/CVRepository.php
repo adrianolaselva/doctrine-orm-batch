@@ -14,12 +14,12 @@ class CVRepository extends EntityRepository
 {
     public function exists(CV $ro){
         return $this->findOneBy([
-            'ro' => $ro->getRo(),
+            //'ro' => $ro->getRo(),
             'estabelecimento' => $ro->getEstabelecimento(),
             'numeroCartao' => $ro->getNumeroCartao(),
             'numeroLogico' => $ro->getNumeroLogico(),
             'autorizacao' => $ro->getAutorizacao(),
-            'dataVenda' => $ro->getDataVenda(),
+            //'dataVenda' => $ro->getDataVenda(),
         ]);
     }
 }
